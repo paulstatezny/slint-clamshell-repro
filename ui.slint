@@ -1,0 +1,46 @@
+import { Button, VerticalBox } from "std-widgets.slint";
+
+export component AppWindow inherits Window {
+    title: "Slint clamshell repro";
+    preferred-width: 360px;
+    preferred-height: 260px;
+
+    in-out property <int> value: 0;
+
+    VerticalBox {
+        alignment: center;
+        spacing: 16px;
+
+        // Continuously-sweeping progress bar. This is the key tell:
+        // when the bug is active, the bar freezes (no frames being drawn),
+        // even though clicks on the button below still register and update
+        // the counter under the hood.
+        Rectangle {
+            width: 240px;
+            height: 12px;
+            background: #e5e7eb;
+            border-radius: 6px;
+            clip: true;
+
+            Rectangle {
+                x: 0;
+                y: 0;
+                width: parent.width * (Math.mod(animation-tick() / 1ms, 1500) / 1500);
+                height: parent.height;
+                background: #4a90e2;
+                border-radius: 6px;
+            }
+        }
+
+        Text {
+            text: "Count: " + root.value;
+            horizontal-alignment: center;
+            font-size: 28px;
+        }
+
+        Button {
+            text: "Increment";
+            clicked => { root.value += 1; }
+        }
+    }
+}
